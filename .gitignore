@@ -1,0 +1,14 @@
+.env
+.env.local
+.env.*.local
+.dev.vars
+proxy-worker/.dev.vars
+
+
+
+node_modules
+dist
+build
+
+.DS_Store
+Thumbs.db
