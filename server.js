@@ -16,7 +16,7 @@ app.post('/api/chat', async (req, res) => {
   try {
     const { messages } = req.body;
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GOOGLE_API_KEY}`;
+    const url = `https://generativelanguage.googleapis.com/v1/models/${GEMINI_MODEL}:generateContent?key=${GOOGLE_API_KEY}`;
     const body = {
       contents: messages.map(msg => ({
       role: msg.role === 'user' ? 'user' : 'model',
