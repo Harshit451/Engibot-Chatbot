@@ -27,11 +27,11 @@ app.post('/api/chat', async (req, res) => {
       },
     };
 
-    const response = await fetch('/api/chat', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages: historyMessages })
-  });
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
 
 
     const data = await response.json();

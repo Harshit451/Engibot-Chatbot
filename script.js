@@ -8,8 +8,9 @@ const SYSTEM_PROMPT = `You are EngiBot, a helpful engineering assistant.
 - Ask for missing data if needed.`;
 
 function getApiKey() {
-  return (localStorage.getItem('engibot_api_key') || GOOGLE_API_KEY || '').trim();
+  return (localStorage.getItem('engibot_api_key') || '').trim();
 }
+
 
 function toGeminiContents(historyMessages = []) {
   const mapped = historyMessages.map(m => ({
@@ -319,6 +320,7 @@ f=Fs*(0:(L/2))/L; figure; plot(f,P1); grid on; xlabel('f (Hz)'); ylabel('|P1(f)|
 }
 
 async function generateAnswer(text, historyMessages) {
+  console.log("✅ Gemini block active with key:", getApiKey());
   if (ENABLE_GEMINI && getApiKey()) {
     try {
       const context = (historyMessages || []).slice(-16);
