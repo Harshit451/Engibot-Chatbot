@@ -22,11 +22,12 @@ function toGeminiContents(historyMessages = []) {
 
 async function callGeminiAPI(historyMessages = []) {
   try {
-    const res = await fetch('http://localhost:3000/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: toGeminiContents(historyMessages) })
-    });
+    const res = await fetch('http://localhost:3000/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: userMessage })
+});
+
 
     const data = await res.json();
     if (!res.ok) throw new Error(data.error?.message || 'Backend error');
