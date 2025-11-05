@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(express.static('.'));
 
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
-const GEMINI_MODEL = 'gemini-1.5-flash';
+const GEMINI_MODEL = 'gemini-1.5-flash-latest';
 
 app.post('/api/chat', async (req, res) => {
   console.log("✅ Received message from frontend:", req.body);
