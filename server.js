@@ -9,14 +9,14 @@ app.use(express.json());
 app.use(express.static('.'));
 
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
-const GEMINI_MODEL = 'gemini-1.5-flash-latest';
+const GEMINI_MODEL = 'models/gemini-1.5-flash';
 
 app.post('/api/chat', async (req, res) => {
   console.log("✅ Received message from frontend:", req.body);
   try {
     const { messages } = req.body;
 
-    const url = `https://generativelanguage.googleapis.com/v1/models/${GEMINI_MODEL}:generateContent?key=${GOOGLE_API_KEY}`;
+    const url = `https://generativelanguage.googleapis.com/v1/${GEMINI_MODEL}:generateContent?key=${GOOGLE_API_KEY}`;
     const body = {
       contents: messages.map(msg => ({
       role: msg.role === 'user' ? 'user' : 'model',
