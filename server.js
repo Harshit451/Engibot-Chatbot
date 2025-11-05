@@ -1,30 +1,29 @@
-import express from 'express';
-import fetch from 'node-fetch';
-import dotenv from 'dotenv';
+import express from "express";
+import fetch from "node-fetch";
+import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use(express.static('.'));
+app.use(express.static("."));
 
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
-const GEMINI_MODEL = 'models/gemini-1.5-flash'; // correct model name
+const GEMINI_MODEL = "gemini-1.5-flash-latest";
 
-app.post('/api/chat', async (req, res) => {
+app.post("/api/chat", async (req, res) => {
   console.log("✅ Received message from frontend:", req.body);
   try {
     const { messages } = req.body;
 
-    // ✅ use v1beta instead of v1
-    const url = `https://generativelanguage.googleapis.com/v1beta/${GEMINI_MODEL}:generateContent?key=${GOOGLE_API_KEY}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GOOGLE_API_KEY}`;
 
     const body = {
-      contents: messages.map(msg => ({
-        role: msg.role === 'user' ? 'user' : 'model',
-        parts: [{ text: msg.content }]
+      contents: messages.map((msg) => ({
+        role: msg.role === "user" ? "user" : "model",
+        parts: [{ text: msg.content }],
       })),
       generationConfig: {
-        temperature: 0.2,
+        temperature: 0.7,
         topP: 0.95,
         topK: 40,
         maxOutputTokens: 1000,
@@ -32,8 +31,8 @@ app.post('/api/chat', async (req, res) => {
     };
 
     const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
 
@@ -45,11 +44,11 @@ app.post('/api/chat', async (req, res) => {
     }
 
     const reply =
-      data?.candidates?.[0]?.content?.parts?.map((p) => p.text).join('') || '';
+      data?.candidates?.[0]?.content?.parts?.map((p) => p.text).join("") || "";
     res.json({ reply: reply.trim() });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Server error: ' + error.message });
+    console.error("❌ Server Error:", error);
+    res.status(500).json({ error: "Server error: " + error.message });
   }
 });
 
