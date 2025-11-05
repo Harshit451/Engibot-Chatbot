@@ -6,11 +6,13 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use(express.static('.'));
 
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 const GEMINI_MODEL = 'gemini-1.5-flash';
 
 app.post('/api/chat', async (req, res) => {
+  console.log("✅ Received message from frontend:", req.body);
   try {
     const { messages } = req.body;
 
@@ -25,13 +27,15 @@ app.post('/api/chat', async (req, res) => {
       },
     };
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
+    const response = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages: historyMessages })
+  });
+
 
     const data = await response.json();
+    console.log("🔹 Gemini API full response:", JSON.stringify(data, null, 2));
     if (!response.ok) {
       return res.status(response.status).json({ error: data.error });
     }
