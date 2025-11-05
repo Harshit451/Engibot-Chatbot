@@ -1,5 +1,4 @@
 const ENABLE_GEMINI = true;
-const GOOGLE_API_KEY = 'AIzaSyCVSeU4Xm8KHhTQ7BdG75AKsmI2r2Qbn0o'; 
 const GEMINI_MODEL = 'gemini-2.5-flash'; 
 
 const SYSTEM_PROMPT = `You are EngiBot, a helpful engineering assistant.
@@ -22,37 +21,22 @@ function toGeminiContents(historyMessages = []) {
 }
 
 async function callGeminiAPI(historyMessages = []) {
-  const apiKey = getApiKey();
-  if (!apiKey) throw new Error('No Google API key set. Paste in script.js or save in localStorage as "engibot_api_key".');
+  try {
+    const res = await fetch('http://localhost:3000/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: toGeminiContents(historyMessages) })
+    });
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`;
-
-  const body = {
-    contents: toGeminiContents(historyMessages),
-    systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-    generationConfig: {
-      temperature: 0.2,
-      topP: 0.95,
-      topK: 40,
-      maxOutputTokens: 1200
-    }
-  };
-
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-
-  const data = await res.json();
-  if (!res.ok) {
-    const msg = data?.error?.message || `HTTP ${res.status}`;
-    throw new Error(`Gemini API error: ${msg}`);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || 'Backend error');
+    return (data.reply || '').trim();
+  } catch (error) {
+    console.error(error);
+    throw new Error('Server not responding.');
   }
-
-  const text = data?.candidates?.[0]?.content?.parts?.map(p => p.text).join('') || '';
-  return text.trim();
 }
+
 
 //  NAVIGATION 
 function showPage(pageId) {
