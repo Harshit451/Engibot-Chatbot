@@ -1,5 +1,5 @@
 const ENABLE_GEMINI = true;
-const GEMINI_MODEL = 'gemini-2.5-flash'; 
+const GEMINI_MODEL = 'gemini-1.5-flash'; 
 
 const SYSTEM_PROMPT = `You are EngiBot, a helpful engineering assistant.
 - Be accurate and concise. Show formulas, units, and steps when useful.
