@@ -1,53 +1,66 @@
-import express from "express";
-import fetch from "node-fetch";
-import dotenv from "dotenv";
-
+// server.js
+import express from 'express';
+import fetch from 'node-fetch';
+import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use(express.static(".")); // serve index.html and JS files
+app.use(express.static('.')); // serve frontend files
 
-const PORT = 3000;
+// Load Gemini API key from .env
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
-// ✅ Gemini API endpoint
-app.post("/api/chat", async (req, res) => {
+// Change this to a currently supported Gemini model
+const GEMINI_MODEL = 'gemini-1.5-turbo';
+
+app.post('/api/chat', async (req, res) => {
+  console.log("✅ Received message from frontend:", req.body);
+
+  if (!GEMINI_API_KEY) {
+    return res.status(500).json({ error: 'No Gemini API key found in .env' });
+  }
+
   try {
-    console.log("✅ Received message from frontend:", req.body);
+    const { messages } = req.body;
 
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      console.error("❌ No Gemini API key found in .env");
-      return res.status(500).json({ error: "Missing API key" });
-    }
+    // Convert frontend messages to Gemini API format
+    const body = {
+      contents: messages.map(msg => ({
+        role: msg.role === 'user' ? 'user' : 'assistant',
+        parts: [{ text: msg.content }]
+      })),
+      generationConfig: {
+        temperature: 0.2,
+        topP: 0.95,
+        topK: 40,
+        maxOutputTokens: 1000,
+      },
+    };
 
-    const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + apiKey,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: req.body.messages.map((msg) => ({
-            role: msg.role,
-            parts: [{ text: msg.content }],
-          })),
-        }),
-      }
-    );
+    const url = `https://generativelanguage.googleapis.com/v1/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
 
     const data = await response.json();
-    console.log("🔹 Gemini API full response:", data);
+    console.log("🔹 Gemini API full response:", JSON.stringify(data, null, 2));
 
-    if (data.error) {
-      return res.status(400).json({ error: data.error.message });
+    if (!response.ok) {
+      return res.status(response.status).json({ error: data.error });
     }
 
-    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn’t process that right now.";
-    res.json({ reply });
+    const reply = data?.candidates?.[0]?.content?.parts?.map(p => p.text).join('') || '';
+    res.json({ reply: reply.trim() });
+
   } catch (error) {
-    console.error("❌ Server error:", error);
-    res.status(500).json({ error: "Server failed to process request" });
+    console.error(error);
+    res.status(500).json({ error: 'Server error: ' + error.message });
   }
 });
 
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`✅ Server running on http://localhost:${PORT}`));
