@@ -1,4 +1,3 @@
-// server.js
 import express from 'express';
 import fetch from 'node-fetch';
 import dotenv from 'dotenv';
@@ -9,20 +8,21 @@ app.use(express.json());
 app.use(express.static('.'));
 
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
-const GEMINI_MODEL = 'models/gemini-1.5-flash';
+const GEMINI_MODEL = 'models/gemini-1.5-flash'; // correct model name
 
 app.post('/api/chat', async (req, res) => {
   console.log("✅ Received message from frontend:", req.body);
   try {
     const { messages } = req.body;
 
-    const url = `https://generativelanguage.googleapis.com/v1/${GEMINI_MODEL}:generateContent?key=${GOOGLE_API_KEY}`;
+    // ✅ use v1beta instead of v1
+    const url = `https://generativelanguage.googleapis.com/v1beta/${GEMINI_MODEL}:generateContent?key=${GOOGLE_API_KEY}`;
+
     const body = {
       contents: messages.map(msg => ({
-      role: msg.role === 'user' ? 'user' : 'model',
-      parts: [{ text: msg.content }]
-    })),
-
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.content }]
+      })),
       generationConfig: {
         temperature: 0.2,
         topP: 0.95,
@@ -37,9 +37,9 @@ app.post('/api/chat', async (req, res) => {
       body: JSON.stringify(body),
     });
 
-
     const data = await response.json();
     console.log("🔹 Gemini API full response:", JSON.stringify(data, null, 2));
+
     if (!response.ok) {
       return res.status(response.status).json({ error: data.error });
     }
@@ -54,4 +54,6 @@ app.post('/api/chat', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`✅ Server running on http://localhost:${PORT}`));
+app.listen(PORT, () =>
+  console.log(`✅ Server running on http://localhost:${PORT}`)
+);
