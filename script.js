@@ -22,6 +22,9 @@ function toGeminiContents(historyMessages = []) {
 
 async function callGeminiAPI(historyMessages = []) {
   try {
+    console.log("📤 Sending messages to backend:", historyMessages);
+
+
     const res = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
