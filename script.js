@@ -1,5 +1,5 @@
 const ENABLE_GEMINI = true;
-const GEMINI_MODEL = 'gemini-1.5-flash'; 
+const GEMINI_MODEL = 'gemini-2.5-flash'; 
 
 const SYSTEM_PROMPT = `You are EngiBot, a helpful engineering assistant.
 - Be accurate and concise. Show formulas, units, and steps when useful.
@@ -23,13 +23,18 @@ function toGeminiContents(historyMessages = []) {
 
 async function callGeminiAPI(historyMessages = []) {
   try {
-    console.log("📤 Sending messages to backend:", historyMessages);
+    // Map roles to valid Gemini API roles
+    const formattedMessages = historyMessages.map(msg => ({
+      role: msg.role === 'bot' ? 'model' : msg.role, // 'bot' → 'model'
+      content: msg.content
+    }));
 
+    console.log("📤 Sending formatted messages to backend:", formattedMessages);
 
     const res = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: historyMessages }),
+      body: JSON.stringify({ messages: formattedMessages }),
     });
 
     if (!res.ok) {
@@ -43,6 +48,7 @@ async function callGeminiAPI(historyMessages = []) {
     return 'Sorry, I couldn’t process that right now.';
   }
 }
+
 
 
 

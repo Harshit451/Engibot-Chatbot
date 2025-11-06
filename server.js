@@ -12,7 +12,7 @@ app.use(express.static('.')); // serve frontend files
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 // Change this to a currently supported Gemini model
-const GEMINI_MODEL = 'gemini-1.5-turbo';
+const GEMINI_MODEL = 'gemini-2.5-flash';
 
 app.post('/api/chat', async (req, res) => {
   console.log("✅ Received message from frontend:", req.body);
