@@ -26,10 +26,10 @@ app.post('/api/chat', async (req, res) => {
 
     // Convert frontend messages to Gemini API format
     const body = {
-      contents: messages.map(msg => ({
-        role: msg.role === 'user' ? 'user' : 'assistant',
-        parts: [{ text: msg.content }]
-      })),
+    contents: messages.map(msg => ({
+    role: msg.role === 'user' ? 'user' : 'model', // ✅ 'model' instead of 'assistant'
+    parts: [{ text: msg.content }]
+    })),
       generationConfig: {
         temperature: 0.2,
         topP: 0.95,

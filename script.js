@@ -23,11 +23,12 @@ function toGeminiContents(historyMessages = []) {
 
 async function callGeminiAPI(historyMessages = []) {
   try {
-    // Map roles to valid Gemini API roles
-    const formattedMessages = historyMessages.map(msg => ({
-      role: msg.role === 'bot' ? 'model' : msg.role, // 'bot' → 'model'
-      content: msg.content
-    }));
+    const userMessages = historyMessages.filter(m => m.role === 'user');
+
+    const formattedMessages = [
+      { role: 'system', parts: [{ text: SYSTEM_PROMPT }] },
+      ...userMessages.map(m => ({ role: 'user', parts: [{ text: m.content }] }))
+    ];
 
     console.log("📤 Sending formatted messages to backend:", formattedMessages);
 
@@ -48,6 +49,7 @@ async function callGeminiAPI(historyMessages = []) {
     return 'Sorry, I couldn’t process that right now.';
   }
 }
+
 
 
 
@@ -388,10 +390,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function seedGreetingIfEmpty(msgs) {
-    if (msgs.length === 0) {
-      msgs.push({ role: 'bot', content: "Hello! I’m EngiBot. I can do conversions, quick calcs, Ohm’s law, RLC resonance, beam deflection, and small code snippets. Try: convert 50 MPa to psi" });
-    }
+  if (msgs.length === 0) {
+    msgs.push({ role: 'user', content: "Hello! I’m EngiBot. I can do conversions, quick calcs..." });
   }
+}
+
 
   let messages = loadMessages();
   seedGreetingIfEmpty(messages);
