@@ -2,11 +2,12 @@ import express from 'express';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const SYSTEM_PROMPT = `You are EngiBot, a helpful engineering assistant.
-- Be accurate and concise. Show formulas, units, and steps when useful.
+const SYSTEM_PROMPT = `You are EngiBot, a helpful AI assistant focused on engineering, science, and general knowledge.
+- Be accurate and concise. Use formulas, steps, and clear reasoning when needed.
+- For general topics (like current affairs, education, or studies), provide factual and balanced answers.
 - Prefer SI units; convert on request.
-- For code, include clear formatting and brief comments.
-- Ask for missing data if needed.`;
+- For code, include clear formatting and brief comments.`;
+
 
 const app = express();
 app.use(express.json());
