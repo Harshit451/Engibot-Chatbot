@@ -26,13 +26,22 @@ app.post('/api/chat', async (req, res) => {
     const { messages } = req.body;
 
  const body = {
-  contents: messages.map(m => ({
-    role: m.role === 'user' ? 'user' : 'system',
-    parts: [{ text: m.content || m.text || "" }]   // ✅ parts array is required
-  })),
-  temperature: 0.2,
-  maxOutputTokens: 1000
+  contents: [
+    {
+      role: "user",
+      parts: [{ text: SYSTEM_PROMPT }] 
+    },
+    ...messages.map(m => ({
+      role: m.role === 'user' ? 'user' : 'model',
+      parts: [{ text: m.content || m.text || "" }]
+    }))
+  ],
+  generationConfig: {
+    temperature: 0.4,
+    maxOutputTokens: 1024
+  }
 };
+
 
 
 
