@@ -409,9 +409,9 @@ document.addEventListener('DOMContentLoaded', () => {
       msgs.push({
         role: 'bot',
         content: `Hello! 👋 I’m **EngiBot**, your AI assistant for engineering, learning, and problem-solving.  
-        I can handle calculations, explain concepts, write code, and answer study or general knowledge questions.  
-        What would you like to explore today?`
-      });
+I can handle calculations, explain concepts, write code, and answer study or general knowledge questions.  
+What would you like to explore today?`
+  });
 
 
     }
