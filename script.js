@@ -23,19 +23,25 @@ function toGeminiContents(historyMessages = []) {
 
 async function callGeminiAPI(historyMessages = []) {
   try {
+    // Only include user messages for API
     const userMessages = historyMessages.filter(m => m.role === 'user');
+    if (!userMessages.length) return 'No user message found.';
 
-    const formattedMessages = [
-      { role: 'system', parts: [{ text: SYSTEM_PROMPT }] },
-      ...userMessages.map(m => ({ role: 'user', parts: [{ text: m.content }] }))
-    ];
+    // Use the last user message
+    const lastUserMessage = userMessages[userMessages.length - 1].content;
+
+   const formattedMessages = [
+  { role: "system", parts: [{ text: SYSTEM_PROMPT }] },
+  { role: "user", parts: [{ text: userInput.value.trim() }] }
+];
+
 
     console.log("📤 Sending formatted messages to backend:", formattedMessages);
 
     const res = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: formattedMessages }),
+      body: JSON.stringify({ messages: formattedMessages })
     });
 
     if (!res.ok) {
@@ -49,6 +55,8 @@ async function callGeminiAPI(historyMessages = []) {
     return 'Sorry, I couldn’t process that right now.';
   }
 }
+
+
 
 
 
@@ -390,11 +398,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function seedGreetingIfEmpty(msgs) {
-  if (msgs.length === 0) {
-    msgs.push({ role: 'user', content: "Hello! I’m EngiBot. I can do conversions, quick calcs..." });
+    if (msgs.length === 0) {
+      msgs.push({ role: 'bot', content: "Hello! I’m EngiBot. I can do conversions, quick calcs, Ohm’s law, RLC resonance, beam deflection, and small code snippets. Try: convert 50 MPa to psi" });
+    }
   }
-}
-
 
   let messages = loadMessages();
   seedGreetingIfEmpty(messages);
