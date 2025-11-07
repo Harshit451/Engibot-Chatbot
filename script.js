@@ -406,7 +406,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function seedGreetingIfEmpty(msgs) {
     if (msgs.length === 0) {
-      msgs.push({ role: 'bot', content: "Hello! I’m EngiBot. I can do conversions, quick calcs, Ohm’s law, RLC resonance, beam deflection, and small code snippets. Try: convert 50 MPa to psi" });
+      msgs.push({
+        role: 'bot',
+        content: `👋 Hello! I’m **EngiBot**, your intelligent engineering and study assistant.
+        I can help you with:
+        • Engineering problems, formulas, and quick calculations  
+        • Unit conversions and design concepts  
+        • Study guidance and general knowledge  
+        • Programming help (Python, MATLAB, C++, etc.)`
+});
+
     }
   }
 
