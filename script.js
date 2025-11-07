@@ -408,13 +408,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (msgs.length === 0) {
       msgs.push({
         role: 'bot',
-        content: `👋 Hello! I’m **EngiBot**, your intelligent engineering and study assistant.
-        I can help you with:
-        • Engineering problems, formulas, and quick calculations  
-        • Unit conversions and design concepts  
-        • Study guidance and general knowledge  
-        • Programming help (Python, MATLAB, C++, etc.)`
-});
+        content: `Hello! 👋 I’m **EngiBot**, your AI assistant for engineering, learning, and problem-solving.  
+        I can handle calculations, explain concepts, write code, and answer study or general knowledge questions.  
+        What would you like to explore today?`
+      });
+
 
     }
   }
