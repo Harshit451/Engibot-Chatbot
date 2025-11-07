@@ -7,6 +7,81 @@ const SYSTEM_PROMPT = `You are EngiBot, a helpful engineering assistant.
 - For code, include clear formatting and brief comments.
 - Ask for missing data if needed.`;
 
+// chat
+
+// Initialize chat UI elements
+const userInput = document.getElementById('userInput');
+const sendButton = document.getElementById('sendButton');
+const chatContainer = document.getElementById('chatContainer');
+
+// Handle sending messages
+async function handleSendMessage() {
+    const content = userInput.value.trim();
+    if (!content) return;
+
+    // Disable input while processing
+    sendButton.disabled = true;
+    userInput.disabled = true;
+
+    try {
+        // Add user message to chat
+        const userMessage = { role: 'user', content };
+        appendMessage(userMessage);
+
+        // Clear input
+        userInput.value = '';
+
+        // Call API
+        const response = await callGeminiAPI([userMessage]);
+        
+        // Add bot response to chat
+        appendMessage({ role: 'assistant', content: response });
+    } catch (error) {
+        console.error('Error:', error);
+        appendMessage({ 
+            role: 'assistant', 
+            content: 'Sorry, I encountered an error processing your request.'
+        });
+    } finally {
+        // Re-enable input
+        sendButton.disabled = false;
+        userInput.disabled = false;
+        userInput.focus();
+    }
+}
+
+// Append a message to the chat
+function appendMessage(message) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${message.role}`;
+    messageDiv.innerHTML = `
+        <div class="message-content">
+            ${message.role === 'user' ? 
+                `<i class="fas fa-user"></i>` : 
+                `<i class="fas fa-robot"></i>`}
+            <div class="text">${message.content}</div>
+        </div>
+    `;
+    chatContainer.appendChild(messageDiv);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+// Event listeners
+sendButton.addEventListener('click', handleSendMessage);
+userInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleSendMessage();
+    }
+});
+
+// Enable/disable send button based on input
+userInput.addEventListener('input', () => {
+    sendButton.disabled = userInput.value.trim().length === 0;
+});
+
+// chat
+
 function getApiKey() {
   return (localStorage.getItem('engibot_api_key') || '').trim();
 }
@@ -31,8 +106,14 @@ async function callGeminiAPI(historyMessages = []) {
     const lastUserMessage = userMessages[userMessages.length - 1].content;
 
    const formattedMessages = [
-  { role: "system", parts: [{ text: SYSTEM_PROMPT }] },
-  { role: "user", parts: [{ text: userInput.value.trim() }] }
+  {
+    role: "system",
+    content: SYSTEM_PROMPT
+  },
+  {
+    role: "user",
+    content: lastUserMessage
+  }
 ];
 
 
