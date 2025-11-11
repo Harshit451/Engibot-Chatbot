@@ -45,7 +45,7 @@ async function callGeminiAPI(historyMessages = []) {
 
     console.log("📤 Sending formatted messages to backend:", formattedMessages);
 
-    const res = await fetch('/api/chat', {
+    const res = await fetch('https://engibot-chatbot.onrender.com/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ messages: formattedMessages })
